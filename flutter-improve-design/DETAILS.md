@@ -601,3 +601,15 @@ The rules behind `flutter-improve-design`. Each rule: a title, then a **Link** l
 **Detect:** a sentence with tappable links built from separately translated pieces (a `Row`/`Wrap` of `Text`s and buttons, or `TextSpan`s each with their own translation key), instead of one translated string with the links marked inside. One is enough to count the rule as not adhered. An app without localization is out of scope.
 
 **Hunt:** grep `AppLocalizations|easy_localization|\.tr\(|intl_utils|slang` for localization; none means the rule doesn't apply. Then grep `TapGestureRecognizer|Terms|terms|Privacy|privacy` near `TextSpan|Text.rich|RichText|Wrap|Row`. A linked sentence assembled from several translation keys is a match.
+
+---
+
+## Keep the screen awake only where users watch it
+
+**Link:** https://flutterpro.design/details/md/keep-screen-awake
+
+**Why:** on a video player, a call, navigation or a reading page, users look at the screen for minutes without touching it, and it turns off in the middle. Keep it awake there, and only there: a phone that never locks drains the battery and stays open for anyone to see.
+
+**Detect:** a page users watch without touching (video, live call, navigation, compass, reading, workout or cooking timer) with no wakelock, or a wakelock that's turned on app-wide (in `main` or the root widget) or never turned off when the page is left, like a tab in an `IndexedStack` that never disposes. One is enough to count the rule as not adhered.
+
+**Hunt:** grep `wakelock|WakelockPlus` first; if found, check it's enabled per page and disabled when that page is left, not in `main.dart`. If not found, grep `video_player|VideoPlayer|chewie|better_player|agora|livekit|webrtc|jitsi|compass|reader` for a watch-without-touching page. One without a wakelock is a match; no such page means the rule doesn't apply.
