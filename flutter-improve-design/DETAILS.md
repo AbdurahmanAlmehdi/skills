@@ -565,3 +565,15 @@ The rules behind `flutter-improve-design`. Each rule: a title, then a **Link** l
 **Detect:** network images loaded with no disk cache: `Image.network`, `NetworkImage`, `ExtendedNetworkImageProvider` without `cache: true`, or `ExtendedImage.network` with `cache: false`. `CachedNetworkImage` and `ExtendedImage.network` with its default cache count as handled. One is enough to count the rule as not adhered.
 
 **Hunt:** grep `Image.network|NetworkImage(|ExtendedNetworkImageProvider|ExtendedImage.network|CachedNetworkImage`; none means the rule doesn't apply. Stop at the first image without a disk cache; that's a match.
+
+---
+
+## Carry the typed number from login to reset password and register
+
+**Link:** https://flutterpro.design/details/md/prefill-from-login
+
+**Why:** users usually open "Forgot password" right after a "Wrong credentials" error, to reset the account they just typed, and make them type it again. A user who taps "Register" from login just realized they don't have an account. Both pages should open with the number already filled in.
+
+**Detect:** a login page with a phone number (or email) field that links to forgot password or registration, where the navigation doesn't pass the typed value along or the next page's field doesn't start with it. One of the two is enough to count the rule as not adhered.
+
+**Hunt:** grep `forgot|Forgot|reset_password|ResetPassword|register|Register|sign_up|SignUp` in the login page; no login page with those links means the rule doesn't apply. Check the push to each for an argument carrying the login field's text, and the target page's controller for an initial `text:` from it. The first missing is a match.
