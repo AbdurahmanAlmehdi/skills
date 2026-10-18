@@ -541,3 +541,15 @@ The rules behind `flutter-improve-design`. Each rule: a title, then a **Link** l
 **Detect:** a login form where nothing calls `TextInput.finishAutofillContext()` after the sign in succeeds, or whose `AutofillGroup` keeps the default `onDisposeAction` (`commit`), which saves whenever the screen is left, even after a failed sign in. A successful password reset with no `finishAutofillContext()` counts too. One is enough to count the rule as not adhered.
 
 **Hunt:** grep `obscureText` for the login form; none means the rule doesn't apply. Then grep `finishAutofillContext` on the sign in and reset success paths, and `onDisposeAction` on the group. The first one missing is a match.
+
+---
+
+## Let urgent notifications through Focus on iOS
+
+**Link:** https://flutterpro.design/details/md/time-sensitive-notifications
+
+**Why:** a courier at the door or a login code that expires in minutes lands silently in a Focus mode or a scheduled summary, and the user sees it too late. Marked as time sensitive, iOS delivers it right away and keeps it on screen until it's opened.
+
+**Detect:** the app shows notifications on iOS for events that expire in minutes (a courier or ride arriving, a login code, a reservation about to be released, a time that's about to pass) and either doesn't mark them time sensitive (`InterruptionLevel.timeSensitive` for local ones) or marks them without the Time Sensitive Notifications capability (`com.apple.developer.usernotifications.time-sensitive` in the `ios/Runner` entitlements), which makes iOS ignore the level. Push payloads are built on the server, outside this repo, so judge push by the capability alone. "Order shipped", promos and likes aren't urgent; nothing to flag for apps that only send those.
+
+**Hunt:** check `ios/` exists and pubspec has `flutter_local_notifications|firebase_messaging|onesignal`; if not, the rule doesn't apply. Read what the notifications say to find an urgent one; none means the rule doesn't apply. Then grep `interruptionLevel|timeSensitive` in `lib/` and `time-sensitive` in `ios/`. An urgent notification without the level, or the level without the capability, is a match.
