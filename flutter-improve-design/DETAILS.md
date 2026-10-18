@@ -529,3 +529,15 @@ The rules behind `flutter-improve-design`. Each rule: a title, then a **Link** l
 **Detect:** a login, sign up or password reset form where the fields have no `autofillHints`, or have them but aren't wrapped together in one `AutofillGroup`. Also counts: a sign up or reset field using `AutofillHints.password` instead of `AutofillHints.newPassword`, or `AutofillHints.email` on a field without `TextInputType.emailAddress`. One is enough to count the rule as not adhered.
 
 **Hunt:** grep `obscureText` for password fields; none means the rule doesn't apply. In each of those files, check the fields for `autofillHints` and the form for an `AutofillGroup` around them. Stop at the first form missing either; that's a match.
+
+---
+
+## Offer to save the password after a successful sign in
+
+**Link:** https://flutterpro.design/details/md/trigger-password-save
+
+**Why:** after the user types their login, the password manager should offer to save it, so next time it's one tap. Without a save at the right moment it's either never offered, or offered after a failed sign in and saves the wrong password.
+
+**Detect:** a login form where nothing calls `TextInput.finishAutofillContext()` after the sign in succeeds, or whose `AutofillGroup` keeps the default `onDisposeAction` (`commit`), which saves whenever the screen is left, even after a failed sign in. A successful password reset with no `finishAutofillContext()` counts too. One is enough to count the rule as not adhered.
+
+**Hunt:** grep `obscureText` for the login form; none means the rule doesn't apply. Then grep `finishAutofillContext` on the sign in and reset success paths, and `onDisposeAction` on the group. The first one missing is a match.
