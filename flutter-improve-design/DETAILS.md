@@ -649,3 +649,15 @@ The rules behind `flutter-improve-design`. Each rule: a title, then a **Link** l
 **Detect:** a text field for a value users usually paste (promo, coupon, voucher, referral or gift code, tracking number, IBAN, card number, wallet address) with nothing that reads the clipboard and offers it. One is enough to count the rule as not adhered. OTP fields are out of scope; the system fills those from the SMS.
 
 **Hunt:** grep `promo|coupon|voucher|referral|giftCard|gift_card|tracking|iban|IBAN|cardNumber|card_number|wallet` near `TextField|TextFormField`; none means the rule doesn't apply. Check that page for `Clipboard.getData`; missing is a match.
+
+---
+
+## Turn on "Save" only after something changes
+
+**Link:** https://flutterpro.design/details/md/disable-unchanged-save
+
+**Why:** on an edit form, a "Save" that's always on doesn't tell the user whether there's anything to save, and tapping it sends a request that changes nothing. Off until an edit, it lights up when the change counts, and goes back off if the edit is undone.
+
+**Detect:** an edit form prefilled from saved data (profile, address, settings) whose save button is enabled before anything changes, or is disabled by hiding it or fading it with opacity instead of a solid grey, or tracks "was touched" instead of comparing the current values with the initial ones. Login and sign up are out of scope: their button stays enabled. One is enough to count the rule as not adhered.
+
+**Hunt:** grep `TextEditingController(text:|initialValue:` for prefilled forms; none means the rule doesn't apply. Check the save button's `onPressed` for a has-changes condition, and look for `Opacity|AnimatedOpacity|Visibility` around it. The first always-on or faded one is a match.
