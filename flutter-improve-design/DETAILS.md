@@ -553,3 +553,15 @@ The rules behind `flutter-improve-design`. Each rule: a title, then a **Link** l
 **Detect:** the app shows notifications on iOS for events that expire in minutes (a courier or ride arriving, a login code, a reservation about to be released, a time that's about to pass) and either doesn't mark them time sensitive (`InterruptionLevel.timeSensitive` for local ones) or marks them without the Time Sensitive Notifications capability (`com.apple.developer.usernotifications.time-sensitive` in the `ios/Runner` entitlements), which makes iOS ignore the level. Push payloads are built on the server, outside this repo, so judge push by the capability alone. "Order shipped", promos and likes aren't urgent; nothing to flag for apps that only send those.
 
 **Hunt:** check `ios/` exists and pubspec has `flutter_local_notifications|firebase_messaging|onesignal`; if not, the rule doesn't apply. Read what the notifications say to find an urgent one; none means the rule doesn't apply. Then grep `interruptionLevel|timeSensitive` in `lib/` and `time-sensitive` in `ios/`. An urgent notification without the level, or the level without the capability, is a match.
+
+---
+
+## Cache network images on disk
+
+**Link:** https://flutterpro.design/details/md/cache-network-images
+
+**Why:** Flutter keeps network images in memory only. Every time the app restarts, every image downloads again: screens fill in slower and users pay for the same data twice. Cache them on disk.
+
+**Detect:** network images loaded with no disk cache: `Image.network`, `NetworkImage`, `ExtendedNetworkImageProvider` without `cache: true`, or `ExtendedImage.network` with `cache: false`. `CachedNetworkImage` and `ExtendedImage.network` with its default cache count as handled. One is enough to count the rule as not adhered.
+
+**Hunt:** grep `Image.network|NetworkImage(|ExtendedNetworkImageProvider|ExtendedImage.network|CachedNetworkImage`; none means the rule doesn't apply. Stop at the first image without a disk cache; that's a match.
