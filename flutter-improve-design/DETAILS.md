@@ -517,3 +517,15 @@ The rules behind `flutter-improve-design`. Each rule: a title, then a **Link** l
 **Detect:** a custom enter and exit animation that runs both directions on the same timing: an `AnimationController` played forward and reversed with no `reverseDuration`, a `CurvedAnimation` with no `reverseCurve`, a custom route with `transitionDuration` and no `reverseTransitionDuration`, or the same spring (or a bouncy one) used for both the entrance and the exit. Flutter's built-in page and dialog transitions and one-way animations (a loading pulse, a progress fill) are out of scope. One is enough to count the rule as not adhered.
 
 **Hunt:** grep `AnimationController(|PageRouteBuilder|transitionDuration|SpringDescription|SpringSimulation|MaterialSpringMotion`; none means the rule doesn't apply. For a controller, check it's also `.reverse()`d and whether it sets `reverseDuration` and its curve a `reverseCurve`; for a route, `reverseTransitionDuration`; for springs, whether the exit uses a faster one without bounce. Stop at the first that shares one timing; that's a match.
+
+---
+
+## Let password managers fill the login form
+
+**Link:** https://flutterpro.design/details/md/password-autofill
+
+**Why:** password managers can fill a login screen with one tap, but only when the app tells the system what each field is. Without it, users who saved their password still copy it from the manager by hand, and sign up gets no generated strong password.
+
+**Detect:** a login, sign up or password reset form where the fields have no `autofillHints`, or have them but aren't wrapped together in one `AutofillGroup`. Also counts: a sign up or reset field using `AutofillHints.password` instead of `AutofillHints.newPassword`, or `AutofillHints.email` on a field without `TextInputType.emailAddress`. One is enough to count the rule as not adhered.
+
+**Hunt:** grep `obscureText` for password fields; none means the rule doesn't apply. In each of those files, check the fields for `autofillHints` and the form for an `AutofillGroup` around them. Stop at the first form missing either; that's a match.
