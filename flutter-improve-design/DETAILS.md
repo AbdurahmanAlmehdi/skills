@@ -673,3 +673,15 @@ The rules behind `flutter-improve-design`. Each rule: a title, then a **Link** l
 **Detect:** an edit or compose page (a prefilled edit form, a new post, review or message) that lets the user go back with unsaved changes and no prompt: no `PopScope` (or old `WillPopScope`) guarding it. Also counts: a prompt that shows even when nothing changed, buttons labeled Yes/No/Cancel instead of "Discard changes" and "Keep editing", or a custom back button calling `Navigator.pop` instead of `maybePop`, which skips the guard. Pages that save drafts on their own are fine without a prompt. One is enough to count the rule as not adhered.
 
 **Hunt:** grep `TextEditingController(text:|initialValue:` for edit forms and `maxLines: null|minLines:` for compose fields; none means the rule doesn't apply. Check those pages for `PopScope|WillPopScope`. Stop at the first without; that's a match.
+
+---
+
+## Don't ask for notifications at app open
+
+**Link:** https://flutterpro.design/details/md/notification-permission-priming
+
+**Why:** asked at app open, users have no reason to say yes yet, and the system dialog is a one-shot: after "Don't Allow" on iOS it never shows again. Ask when the benefit is obvious, behind your own screen explaining it, so a "Skip" costs nothing.
+
+**Detect:** the system notification dialog shows with no context: requested from `main`, the splash, the first screen's `initState` or app startup, or requested anywhere without the app's own page or modal explaining the benefit first. `flutter_local_notifications` initialized on iOS with `requestAlertPermission` left at its default `true` counts too, since it prompts at init. One is enough to count the rule as not adhered.
+
+**Hunt:** grep `requestPermission|Permission.notification|requestNotificationsPermission|DarwinInitializationSettings|OneSignal.Notifications`; none means the rule doesn't apply. Trace each request to its caller. One called at startup, or with no explaining screen before it, is a match.
