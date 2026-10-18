@@ -505,3 +505,15 @@ The rules behind `flutter-improve-design`. Each rule: a title, then a **Link** l
 **Detect:** the app reports screens through an analytics navigator observer, and a piece is missing: native automatic screen reporting still on (meaning that nothing disables it on iOS and Android), or routes pushed without names (plain `Navigator.push` with no `RouteSettings` name; named routes and go_router routes carry names already). One missing piece is enough to count the rule as not adhered. No analytics observer means the app doesn't track screens at all, so the rule doesn't apply.
 
 **Hunt:** grep `AnalyticsObserver|navigatorObservers|observers:` for an analytics observer; none means the rule doesn't apply. Then two checks: look in `ios/` and `android/` for whatever disables that SDK's native automatic screen reporting (for Firebase it's `FirebaseAutomaticScreenReportingEnabled` and `automatic_screen_reporting`; other SDKs have their own switch, and some report by session capture instead); grep `Navigator.of|MaterialPageRoute` for pushes without a `RouteSettings` name. The first missing one is a match.
+
+---
+
+## Animate exits faster than entrances
+
+**Link:** https://flutterpro.design/details/md/enter-slow-exit-fast
+
+**Why:** an element that's leaving is already dismissed in the user's head, so every extra frame of its exit is waiting. Entrances can take their time so they get noticed; exits should be faster, and never bounce.
+
+**Detect:** a custom enter and exit animation that runs both directions on the same timing: an `AnimationController` played forward and reversed with no `reverseDuration`, a `CurvedAnimation` with no `reverseCurve`, a custom route with `transitionDuration` and no `reverseTransitionDuration`, or the same spring (or a bouncy one) used for both the entrance and the exit. Flutter's built-in page and dialog transitions and one-way animations (a loading pulse, a progress fill) are out of scope. One is enough to count the rule as not adhered.
+
+**Hunt:** grep `AnimationController(|PageRouteBuilder|transitionDuration|SpringDescription|SpringSimulation|MaterialSpringMotion`; none means the rule doesn't apply. For a controller, check it's also `.reverse()`d and whether it sets `reverseDuration` and its curve a `reverseCurve`; for a route, `reverseTransitionDuration`; for springs, whether the exit uses a faster one without bounce. Stop at the first that shares one timing; that's a match.
