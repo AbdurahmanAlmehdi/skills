@@ -613,3 +613,15 @@ The rules behind `flutter-improve-design`. Each rule: a title, then a **Link** l
 **Detect:** a page users watch without touching (video, live call, navigation, compass, reading, workout or cooking timer) with no wakelock, or a wakelock that's turned on app-wide (in `main` or the root widget) or never turned off when the page is left, like a tab in an `IndexedStack` that never disposes. One is enough to count the rule as not adhered.
 
 **Hunt:** grep `wakelock|WakelockPlus` first; if found, check it's enabled per page and disabled when that page is left, not in `main.dart`. If not found, grep `video_player|VideoPlayer|chewie|better_player|agora|livekit|webrtc|jitsi|compass|reader` for a watch-without-touching page. One without a wakelock is a match; no such page means the rule doesn't apply.
+
+---
+
+## Pick photos without a permission prompt
+
+**Link:** https://flutterpro.design/details/md/native-photo-picker
+
+**Why:** asking for the whole photo library just to pick one photo puts users off, and a deny sends them to Settings. The system photo picker gives the app only the photo they pick, with no permission dialog at all.
+
+**Detect:** a photo pick that asks for gallery permission first (`Permission.photos`, `Permission.storage`, `PhotoManager.requestPermissionExtend`), or `image_picker` used without `useAndroidPhotoPicker = true` on Android. Apps whose feature is the whole library (gallery, backup) are out of scope.
+
+**Hunt:** grep `image_picker|ImagePicker|photo_manager|wechat_assets_picker|Permission.photos|Permission.storage`; none means the rule doesn't apply. A permission request on the pick path, or `ImagePicker` with no `useAndroidPhotoPicker` set at startup, is a match.
