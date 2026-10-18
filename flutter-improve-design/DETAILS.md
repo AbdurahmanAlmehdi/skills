@@ -577,3 +577,15 @@ The rules behind `flutter-improve-design`. Each rule: a title, then a **Link** l
 **Detect:** a login page with a phone number (or email) field that links to forgot password or registration, where the navigation doesn't pass the typed value along or the next page's field doesn't start with it. One of the two is enough to count the rule as not adhered.
 
 **Hunt:** grep `forgot|Forgot|reset_password|ResetPassword|register|Register|sign_up|SignUp` in the login page; no login page with those links means the rule doesn't apply. Check the push to each for an argument carrying the login field's text, and the target page's controller for an initial `text:` from it. The first missing is a match.
+
+---
+
+## Force an update or freeze the app from the server
+
+**Link:** https://flutterpro.design/details/md/forced-update
+
+**Why:** when a released version has a critical bug, or the backend goes down, there's no way to reach users already on that version. A config on the server with minimum versions and a maintenance flag lets you force an update, show a soft one, or freeze the app with a message, without shipping a new release.
+
+**Detect:** nothing checks a server config for a minimum version or a maintenance mode. If one exists, it still counts as not adhered when the check blocks the app from opening (awaited before the first screen shows), when store URLs are hardcoded in the app, or when one minimum version or flag covers both Android and iOS.
+
+**Hunt:** grep `versionarte|upgrader|minVersion|min_version|minimumVersion|forceUpdate|force_update|forcedUpdate|maintenance|Maintenance`; nothing found means the app's missing it. If found, check where it's awaited, where the store URLs come from, and whether versions are set per platform.
