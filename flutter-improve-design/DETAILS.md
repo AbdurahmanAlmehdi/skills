@@ -661,3 +661,15 @@ The rules behind `flutter-improve-design`. Each rule: a title, then a **Link** l
 **Detect:** an edit form prefilled from saved data (profile, address, settings) whose save button is enabled before anything changes, or is disabled by hiding it or fading it with opacity instead of a solid grey, or tracks "was touched" instead of comparing the current values with the initial ones. Login and sign up are out of scope: their button stays enabled. One is enough to count the rule as not adhered.
 
 **Hunt:** grep `TextEditingController(text:|initialValue:` for prefilled forms; none means the rule doesn't apply. Check the save button's `onPressed` for a has-changes condition, and look for `Opacity|AnimatedOpacity|Visibility` around it. The first always-on or faded one is a match.
+
+---
+
+## Ask "Discard changes?" before going back
+
+**Link:** https://flutterpro.design/details/md/discard-changes-prompt
+
+**Why:** one accidental back on an edit form and everything the user typed is gone. Ask before throwing it away, but only when something actually changed.
+
+**Detect:** an edit or compose page (a prefilled edit form, a new post, review or message) that lets the user go back with unsaved changes and no prompt: no `PopScope` (or old `WillPopScope`) guarding it. Also counts: a prompt that shows even when nothing changed, buttons labeled Yes/No/Cancel instead of "Discard changes" and "Keep editing", or a custom back button calling `Navigator.pop` instead of `maybePop`, which skips the guard. Pages that save drafts on their own are fine without a prompt. One is enough to count the rule as not adhered.
+
+**Hunt:** grep `TextEditingController(text:|initialValue:` for edit forms and `maxLines: null|minLines:` for compose fields; none means the rule doesn't apply. Check those pages for `PopScope|WillPopScope`. Stop at the first without; that's a match.
