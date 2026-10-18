@@ -637,3 +637,15 @@ The rules behind `flutter-improve-design`. Each rule: a title, then a **Link** l
 **Detect:** the release build declares `READ_MEDIA_IMAGES` or `READ_MEDIA_VIDEO`, in the app's own `AndroidManifest.xml` or merged in from a package, with no `tools:node="remove"` for them, and the app's core feature isn't browsing the whole library. Gallery, backup and photo editing apps are out of scope.
 
 **Hunt:** check `android/` exists; if not, the rule doesn't apply. Grep `READ_MEDIA_IMAGES|READ_MEDIA_VIDEO` in `android/app/src/main/AndroidManifest.xml`: declared without `tools:node="remove"` is a match, and both removed means it's handled. If neither, grep the same in each Android plugin's `android/src/main/AndroidManifest.xml` in the pub cache, at the versions in `pubspec.lock`. A plugin that declares one is a match.
+
+---
+
+## Offer the copied code on fields people paste into
+
+**Link:** https://flutterpro.design/details/md/clipboard-suggestion
+
+**Why:** promo codes, referral codes, card and tracking numbers are almost always copied from somewhere else, and on iOS pasting means a long press, a wait and a tap. Show what's on the clipboard under the field when it's tapped, and one tap fills it in.
+
+**Detect:** a text field for a value users usually paste (promo, coupon, voucher, referral or gift code, tracking number, IBAN, card number, wallet address) with nothing that reads the clipboard and offers it. One is enough to count the rule as not adhered. OTP fields are out of scope; the system fills those from the SMS.
+
+**Hunt:** grep `promo|coupon|voucher|referral|giftCard|gift_card|tracking|iban|IBAN|cardNumber|card_number|wallet` near `TextField|TextFormField`; none means the rule doesn't apply. Check that page for `Clipboard.getData`; missing is a match.
