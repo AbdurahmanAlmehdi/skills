@@ -589,3 +589,15 @@ The rules behind `flutter-improve-design`. Each rule: a title, then a **Link** l
 **Detect:** nothing checks a server config for a minimum version or a maintenance mode. If one exists, it still counts as not adhered when the check blocks the app from opening (awaited before the first screen shows), when store URLs are hardcoded in the app, or when one minimum version or flag covers both Android and iOS.
 
 **Hunt:** grep `versionarte|upgrader|minVersion|min_version|minimumVersion|forceUpdate|force_update|forcedUpdate|maintenance|Maintenance`; nothing found means the app's missing it. If found, check where it's awaited, where the store URLs come from, and whether versions are set per platform.
+
+---
+
+## Keep Terms links translatable inside one sentence
+
+**Link:** https://flutterpro.design/details/md/linked-text
+
+**Why:** sign up screens link to Terms of Use and Privacy Policy from inside a sentence, and each language puts those links in a different spot. Glued together from separate pieces in code, the links can't move, and the sentence reads broken in any language with a different word order.
+
+**Detect:** a sentence with tappable links built from separately translated pieces (a `Row`/`Wrap` of `Text`s and buttons, or `TextSpan`s each with their own translation key), instead of one translated string with the links marked inside. One is enough to count the rule as not adhered. An app without localization is out of scope.
+
+**Hunt:** grep `AppLocalizations|easy_localization|\.tr\(|intl_utils|slang` for localization; none means the rule doesn't apply. Then grep `TapGestureRecognizer|Terms|terms|Privacy|privacy` near `TextSpan|Text.rich|RichText|Wrap|Row`. A linked sentence assembled from several translation keys is a match.
