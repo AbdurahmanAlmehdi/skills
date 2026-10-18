@@ -625,3 +625,15 @@ The rules behind `flutter-improve-design`. Each rule: a title, then a **Link** l
 **Detect:** a photo pick that asks for gallery permission first (`Permission.photos`, `Permission.storage`, `PhotoManager.requestPermissionExtend`), or `image_picker` used without `useAndroidPhotoPicker = true` on Android. Apps whose feature is the whole library (gallery, backup) are out of scope.
 
 **Hunt:** grep `image_picker|ImagePicker|photo_manager|wechat_assets_picker|Permission.photos|Permission.storage`; none means the rule doesn't apply. A permission request on the pick path, or `ImagePicker` with no `useAndroidPhotoPicker` set at startup, is a match.
+
+---
+
+## Remove photo and video permissions the app doesn't need
+
+**Link:** https://raw.githubusercontent.com/kamranbekirovyz/skills/main/flutter-improve-design/articles/remove-media-permissions.md
+
+**Why:** some photo packages quietly add access to the whole photo and video library to the Android app. Google Play only allows that for apps whose core feature is the library, and holds the rest in review. An app that only picks a photo now and then should strip them and use the system photo picker.
+
+**Detect:** the release build declares `READ_MEDIA_IMAGES` or `READ_MEDIA_VIDEO`, in the app's own `AndroidManifest.xml` or merged in from a package, with no `tools:node="remove"` for them, and the app's core feature isn't browsing the whole library. Gallery, backup and photo editing apps are out of scope.
+
+**Hunt:** check `android/` exists; if not, the rule doesn't apply. Grep `READ_MEDIA_IMAGES|READ_MEDIA_VIDEO` in `android/app/src/main/AndroidManifest.xml`: declared without `tools:node="remove"` is a match, and both removed means it's handled. If neither, grep the same in each Android plugin's `android/src/main/AndroidManifest.xml` in the pub cache, at the versions in `pubspec.lock`. A plugin that declares one is a match.
